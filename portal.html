@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="portal-header">
+        
+        <div class="header-left">
+            <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/1/2022/10/centro-paula-souza-logo.svg" alt="Logo Centro Paula Souza" class="header-logo">
+            <h1 class="header-title">Portal do Aluno</h1>
+        </div>
+        
+        <a href="login.html" class="btn-logout">Sair</a>
+    </header>
+
+    <div class="portal-container">
+        
+        <aside class="sidebar">
+            <div class="student-info">
+                <img src="images/profile-pic.jpg" alt="Foto do Aluno" class="student-photo">
+                <h3 id="student-name">Nome do Aluno</h3>
+                <p id="student-ra">RA: 123456</p>
+            </div>
+            <nav class="main-menu">
+                <ul>
+                    <li><a href="#" class="active" id="menu-inicio"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="#" id="menu-cursos"><i class="fas fa-graduation-cap"></i> Meus Cursos</a></li>
+                    <li><a href="#" id="menu-materias"><i class="fas fa-book-open"></i> Matérias</a></li>
+                    <li><a href="#" id="menu-financeiro"><i class="fas fa-wallet"></i> Financeiro</a></li>
+                    <li><a href="#" id="menu-carteirinha"><i class="fas fa-id-card"></i> Carteirinha Virtual</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content" id="main-content">
+            
+            <h2 id="welcome-title">Bem-vindo(a)!</h2>
+            <p>Este é o seu painel central. Acesse rapidamente o que você precisa.</p>
+
+            <div class="dashboard-grid">
+                
+                <a href="#" class="dashboard-card" id="quick-link-cursos">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Meus Curos</h3>
+                    <p>Acompanhe seu progresso e o curso matriculado.</p>
+                </a>
+                
+                <a href="#" class="dashboard-card" id="quick-link-materias">
+                    <i class="fas fa-book-open"></i>
+                    <h3>Matérias</h3>
+                    <p>Veja a grade curricular completa do seu curso.</p>
+                </a>
+                
+                <a href="#" class="dashboard-card" id="quick-link-financeiro">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Financeiro</h3>
+                    <p>Consulte faturas, pagamentos e pendências.</p>
+                </a>
+                
+                <a href="#" class="dashboard-card" id="quick-link-carteirinha">
+                    <i class="fas fa-id-card"></i>
+                    <h3>Carteirinha</h3>
+                    <p>Acesse sua carteirinha virtual para download.</p>
+                </a>
+
+            </div>
+
+            <div class="updates-section">
+                <h3><i class="fas fa-bullhorn"></i> Avisos e Novidades de TI</h3>
+                <ul class="updates-list">
+                    <li><strong>Inscrições Abertas:</strong> Workshop de Cloud Computing (Azure/AWS) na próxima semana.</li>
+                    <li><strong>Biblioteca:</strong> Novos e-books sobre Segurança da Informação e LGPD disponíveis.</li>
+                    <li><strong>Manutenção:</strong> O sistema de notas estará em manutenção no próximo sábado.</li>
+                </ul>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-content" id="modal-content">
+            <span class="close-modal-btn" id="close-modal">&times;</span>
+            
+            <img src="images/carteirinha.jpg" alt="Carteirinha Virtual" class="modal-image">
+            
+            <a href="images/carteirinha.pdf" download="carteirinha_estudante.pdf" class="btn btn-download">
+                Baixar Carteirinha (PDF)
+            </a>
+            </div>
+    </div>
+</body>
+</html>
