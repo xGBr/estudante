@@ -1,284 +1,217 @@
-// Espera o DOM (a página) carregar completamente antes de rodar o script
 document.addEventListener("DOMContentLoaded", function() {
     
-    // --- LÓGICA DE LOGIN ---
-    // Esta parte só funciona na página 'login.html'
-    const loginForm = document.getElementById("login-form");
-    const errorMessage = document.getElementById("error-message");
+    // --- "BANCO DE DADOS" DE ALUNOS ---
+    const alunos = [
+        {
+            raLogin: "37939916874",
+            senha: "915839",
+            nome: "Gabriel Siles",
+            raDisplay: "37939916874",
+            curso: "Gestão da Tecnologia da Informação",
+            foto: "images/profile-pic.jpg",
+            carteirinha: "images/carteirinha.png",
+            pdf: "images/carteirinha.pdf"
+        },
+        {
+            raLogin: "39993339873",
+            senha: "123456789",
+            nome: "Lais Bordin",
+            raDisplay: "37939916874",
+            curso: "Estatística",
+            foto: "images/profile-pic-lais.jpg",
+            carteirinha: "images/carteirinha_lais.jpg",
+            pdf: "images/carteirinha_lais.pdf" // Assumindo que exista o PDF dela também
+        }
+    ];
 
+ // --- LÓGICA DE LOGIN ---
+    const loginForm = document.getElementById("login-form");
     if (loginForm) {
         loginForm.addEventListener("submit", function(event) {
-            // Previne o comportamento padrão do formulário (que é recarregar a página)
             event.preventDefault();
-
-            // --- Nosso "Banco de Dados" Falso ---
-            const validRA = "37939916874";
-            const validPass = "915839";
-            const studentName = "Gabriel Siles de Castro";
-            // ------------------------------------
-
-            // Pega os valores digitados pelo usuário
             const raInput = document.getElementById("ra").value;
             const passwordInput = document.getElementById("password").value;
 
-            // Verifica se o RA e a Senha estão corretos
-            if (raInput === validRA && passwordInput === validPass) {
-                
-                // Se estiver correto:
-                // 1. Armazena os dados do aluno no "sessionStorage" 
-                sessionStorage.setItem("loggedInUser", studentName);
-                sessionStorage.setItem("loggedInRA", raInput);
+            const alunoEncontrado = alunos.find(a => a.raLogin === raInput && a.senha === passwordInput);
 
-                // 2. Redireciona o usuário para a página do portal
+            if (alunoEncontrado) {
+                sessionStorage.setItem("user", JSON.stringify(alunoEncontrado));
                 window.location.href = "portal.html";
-
             } else {
-                // Se estiver errado:
-                // 1. Mostra a mensagem de erro
-                errorMessage.textContent = "RA ou Senha inválidos. Tente novamente.";
-                errorMessage.style.display = "block";
+                const errorMsg = document.getElementById("error-message");
+                errorMsg.textContent = "RA ou Senha inválidos.";
+                errorMsg.style.display = "block";
             }
         });
     }
 
-    // --- LÓGICA DA PÁGINA DO PORTAL ---
-    // Esta parte só funciona na página 'portal.html'
+    // --- LÓGICA DO PORTAL ---
     const studentNameElement = document.getElementById("student-name");
-    const studentRaElement = document.getElementById("student-ra");
+    if (studentNameElement) {
+        const userData = JSON.parse(sessionStorage.getItem("user"));
 
-    // Verifica se estamos na página do portal (vendo se os elementos existem)
-    if (studentNameElement && studentRaElement) {
-        
-        // Pega os dados do sessionStorage
-        const userName = sessionStorage.getItem("loggedInUser");
-        const userRA = sessionStorage.getItem("loggedInRA");
-
-        if (userName && userRA) {
-            // Preenche o menu lateral
-            studentNameElement.textContent = userName;
-            studentRaElement.textContent = "RA: " + userRA;
-
-            // Personaliza o título do dashboard
-            const welcomeTitle = document.getElementById("welcome-title");
-            if (welcomeTitle) {
-                welcomeTitle.textContent = "Bem-vindo(a) de volta, " + userName + "!";
-            }
-
-        } else {
-            // Se não houver dados (ex: usuário tentou acessar /portal.html direto)
-            // Redireciona de volta para o login
+        if (!userData) {
             window.location.href = "login.html";
+            return;
         }
 
-        // --- CÓDIGO PARA NAVEGAÇÃO DO MENU INTERNO ---
+        // Preenche dados básicos e imagens
+        document.getElementById("student-name").textContent = userData.nome;
+        document.getElementById("student-ra").textContent = "RA: " + userData.raDisplay;
+        document.getElementById("profile-img").src = userData.foto;
+        document.getElementById("modal-img").src = userData.carteirinha;
+        document.getElementById("download-link").href = userData.pdf;
+        
+        const welcomeTitle = document.getElementById("welcome-title");
+        if (welcomeTitle) welcomeTitle.textContent = "Bem-vindo(a), " + userData.nome + "!";
 
         const mainContent = document.getElementById("main-content");
-        
-        // Links do Menu
-        const menuInicio = document.getElementById("menu-inicio");
-        const menuCursos = document.getElementById("menu-cursos");
-        const menuMaterias = document.getElementById("menu-materias");
-        const menuFinanceiro = document.getElementById("menu-financeiro");
-        const menuCarteirinha = document.getElementById("menu-carteirinha");
-        
-        // Pega todos os links de uma vez para gerenciar a classe 'active'
-        const allMenuItems = document.querySelectorAll(".main-menu a");
-        
-        // Salva o conteúdo inicial JÁ PERSONALIZADO
         const inicioContent = mainContent.innerHTML;
+        const allMenuItems = document.querySelectorAll(".main-menu a");
 
-        // Elementos do Modal
-        const modalBackdrop = document.getElementById("modal-backdrop");
-        const modalContent = document.getElementById("modal-content");
-        const closeModalBtn = document.getElementById("close-modal");
-
-        // Função para remover a classe 'active' de todos os links
         function clearActiveLinks() {
             allMenuItems.forEach(link => link.classList.remove("active"));
         }
-        
-        // 3. Adiciona os "ouvintes" de clique para cada link do menu
-        
-        // Link: Início
-        menuInicio.addEventListener("click", function(event) {
-            event.preventDefault();
+
+        // Link: INÍCIO
+        document.getElementById("menu-inicio").addEventListener("click", function(e) {
+            e.preventDefault();
             clearActiveLinks();
-            menuInicio.classList.add("active");
-            mainContent.innerHTML = inicioContent; 
-            
-            // Precisamos re-adicionar os ouvintes aos links rápidos
-            // pois o innerHTML foi recarregado.
+            this.classList.add("active");
+            mainContent.innerHTML = inicioContent;
             addDashboardLinkListeners();
         });
 
-        // Link: Cursos
-        menuCursos.addEventListener("click", function(event) {
-            event.preventDefault();
+        // Link: CURSOS
+        document.getElementById("menu-cursos").addEventListener("click", function(e) {
+            e.preventDefault();
             clearActiveLinks();
-            menuCursos.classList.add("active");
-            
+            this.classList.add("active");
             mainContent.innerHTML = `
                 <h2>Meus Cursos</h2>
-                <p>Aqui está o seu curso atual e seu progresso.</p>
-
                 <div class="course-card">
-                    <h3>Gestão da Tecnologia da Informação</h3>
-                    
+                    <h3>${userData.curso}</h3>
                     <div class="course-progress">
-                        <label for="progress-bar">Progresso do Curso: <strong>65%</strong></label>
-                        <progress id="progress-bar" value="65" max="100"> 65% </progress>
+                        <label>Progresso do Curso: <strong>65%</strong></label>
+                        <progress value="65" max="100"></progress>
                     </div>
-                    
-                    <a href="#" class="btn-secondary">Ver Detalhes do Curso</a>
-                </div>
-            `;
+                    <a href="#" class="btn-secondary">Ver Detalhes</a>
+                </div>`;
         });
 
-        // Link: Matérias
-        menuMaterias.addEventListener("click", function(event) {
-            event.preventDefault();
+        // Link: MATÉRIAS (Lógica de troca de grade)
+        document.getElementById("menu-materias").addEventListener("click", function(e) {
+            e.preventDefault();
             clearActiveLinks();
-            menuMaterias.classList.add("active");
-            
-            mainContent.innerHTML = `
-                <h2>Matérias do Curso</h2>
-                <p>Abaixo estão as principais matérias organizadas por área de conhecimento.</p>
+            this.classList.add("active");
 
-                <div class="subject-area">
-                    <h3>💻 Área de Tecnologia</h3>
-                    <ul class="subject-list">
-                        <li>Linguagens de Programação (como Java, Python, C#)</li>
-                        <li>Desenvolvimento de Software</li>
-                        <li>Banco de Dados e Sistemas de Informação</li>
-                        <li>Infraestrutura de Redes e Segurança da Informação</li>
-                        <li>Arquitetura de Computadores</li>
-                        <li>Sistemas Operacionais</li>
-                        <li>Gestão de Projetos de TI</li>
-                        <li>Governança de TI e ITIL</li>
-                        <li>Cloud Computing e Virtualização</li>
-                    </ul>
-                </div>
-
-                <div class="subject-area">
-                    <h3>📊 Área de Gestão e Negócios</h3>
-                    <ul class="subject-list">
-                        <li>Administração Geral</li>
-                        <li>Contabilidade e Finanças</li>
-                        <li>Economia</li>
-                        <li>Marketing</li>
-                        <li>Gestão de Pessoas</li>
-                        <li>Gestão da Produção</li>
-                        <li>Empreendedorismo</li>
-                        <li>Planejamento Estratégico</li>
-                    </ul>
-                </div>
-
-                <div class="subject-area">
-                    <h3>📐 Fundamentos e Suporte</h3>
-                    <ul class="subject-list">
-                        <li>Matemática Aplicada</li>
-                        <li>Estatística</li>
-                        <li>Comunicação Empresarial</li>
-                        <li>Ética e Legislação em TI</li>
-                    </ul>
-                </div>
-            `;
+            if (userData.curso === "Estatística") {
+                // GRADE DE ESTATÍSTICA
+                mainContent.innerHTML = `
+                    <h2>Matérias do Curso - Estatística</h2>
+                    <div class="subject-area">
+                        <h3>📊 Eixo Matemático e Probabilístico</h3>
+                        <ul class="subject-list">
+                            <li>Cálculo Diferencial e Integral I, II e III</li>
+                            <li>Álgebra Linear Aplicada</li>
+                            <li>Probabilidade I e II</li>
+                            <li>Inferência Estatística</li>
+                        </ul>
+                    </div>
+                    <div class="subject-area">
+                        <h3>💻 Computação e Dados</h3>
+                        <ul class="subject-list">
+                            <li>Linguagem de Programação R e Python</li>
+                            <li>Análise Exploratória de Dados</li>
+                            <li>Banco de Dados para Estatística</li>
+                            <li>Machine Learning e Data Mining</li>
+                        </ul>
+                    </div>
+                    <div class="subject-area">
+                        <h3>📈 Estatística Aplicada</h3>
+                        <ul class="subject-list">
+                            <li>Modelos de Regressão</li>
+                            <li>Análise de Séries Temporais</li>
+                            <li>Amostragem e Pesquisa</li>
+                            <li>Planejamento de Experimentos</li>
+                        </ul>
+                    </div>`;
+            } else {
+                // GRADE DE TI (VOLTOU!)
+                mainContent.innerHTML = `
+                    <h2>Matérias do Curso - TI</h2>
+                    <div class="subject-area">
+                        <h3>💻 Área de Tecnologia</h3>
+                        <ul class="subject-list">
+                            <li>Linguagens de Programação (como Java, Python, C#)</li>
+                            <li>Desenvolvimento de Software</li>
+                            <li>Banco de Dados e Sistemas de Informação</li>
+                            <li>Cloud Computing e Virtualização</li>
+                        </ul>
+                    </div>
+                    <div class="subject-area">
+                        <h3>📊 Área de Gestão e Negócios</h3>
+                        <ul class="subject-list">
+                            <li>Administração Geral</li>
+                            <li>Contabilidade e Finanças</li>
+                            <li>Economia</li>
+                            <li>Gestão de Pessoas</li>
+                        </ul>
+                    </div>
+                    <div class="subject-area">
+                        <h3>📐 Fundamentos e Suporte</h3>
+                        <ul class="subject-list">
+                            <li>Matemática Aplicada</li>
+                            <li>Estatística</li>
+                            <li>Comunicação Empresarial</li>
+                            <li>Ética e Legislação em TI</li>
+                        </ul>
+                    </div>`;
+            }
         });
-        
-        // Link: Financeiro
-        menuFinanceiro.addEventListener("click", function(event) {
-            event.preventDefault();
+
+        // Link: FINANCEIRO
+        document.getElementById("menu-financeiro").addEventListener("click", function(e) {
+            e.preventDefault();
             clearActiveLinks();
-            menuFinanceiro.classList.add("active");
-            
+            this.classList.add("active");
             mainContent.innerHTML = `
                 <h2>Financeiro</h2>
-                
                 <div class="financial-section">
                     <h3>Situação Atual</h3>
-                    <p class="status-ok">No momento não há pendências.</p>
+                    <p class="status-ok">No momento não há pendências para o curso de ${userData.curso}.</p>
                 </div>
-
                 <div class="financial-section">
                     <h3>Faturas Pagas e Histórico</h3>
-                    <p>Consulte seu histórico de pagamentos e faturas quitadas.</p>
-                    
-                    <a href="#" class="btn-secondary" id="link-historico">
-                        Acessar Histórico de Boletos Pagos
-                    </a>
-                </div>
-            `;
+                    <p>Consulte seu histórico de pagamentos.</p>
+                    <a href="#" class="btn-secondary">Acessar Histórico de Boletos</a>
+                </div>`;
         });
 
-        // Link: Carteirinha
-        menuCarteirinha.addEventListener("click", function(event) {
-            event.preventDefault();
-            clearActiveLinks();
-            menuCarteirinha.classList.add("active");
-            
-            // Abre o Modal
-            modalBackdrop.style.display = "flex";
+        // Link: CARTEIRINHA
+        document.getElementById("menu-carteirinha").addEventListener("click", function(e) {
+            e.preventDefault();
+            document.getElementById("modal-backdrop").style.display = "flex";
         });
 
-
-        // --- LÓGICA PARA FECHAR O MODAL ---
-        
-        // Função para fechar o modal
-        function closeModal() {
-            modalBackdrop.style.display = "none";
-            
-            // Clica no "Início" por código para resetar
-            // a seleção do menu e voltar para a tela principal
-            menuInicio.click();
-        }
-
-        // 1. Fechar ao clicar no 'X'
-        closeModalBtn.addEventListener("click", closeModal);
-
-        // 2. Fechar ao clicar FORA da janela (no fundo escuro)
-        modalBackdrop.addEventListener("click", function(event) {
-            // Verifica se o clique foi no 'modalBackdrop' (o pai)
-            // e não no 'modalContent' (o filho)
-            if (event.target === modalBackdrop) {
-                closeModal();
-            }
+        // FECHAR MODAL
+        document.getElementById("close-modal").addEventListener("click", () => {
+            document.getElementById("modal-backdrop").style.display = "none";
         });
-        
-        // --- Função para ativar os links do dashboard ---
+
+        // Links de acesso rápido do Dashboard
         function addDashboardLinkListeners() {
-            const quickCursos = document.getElementById("quick-link-cursos");
-            const quickMaterias = document.getElementById("quick-link-materias");
-            const quickFinanceiro = document.getElementById("quick-link-financeiro");
-            const quickCarteirinha = document.getElementById("quick-link-carteirinha");
-
-            if (quickCursos) {
-                quickCursos.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    menuCursos.click(); // Simula o clique no menu
-                });
-            }
-            if (quickMaterias) {
-                quickMaterias.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    menuMaterias.click(); // Simula o clique no menu
-                });
-            }
-            if (quickFinanceiro) {
-                quickFinanceiro.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    menuFinanceiro.click(); // Simula o clique no menu
-                });
-            }
-            if (quickCarteirinha) {
-                quickCarteirinha.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    menuCarteirinha.click(); // Simula o clique no menu
-                });
+            const links = {
+                "quick-link-cursos": "menu-cursos",
+                "quick-link-materias": "menu-materias",
+                "quick-link-financeiro": "menu-financeiro",
+                "quick-link-carteirinha": "menu-carteirinha"
+            };
+            for (let id in links) {
+                const el = document.getElementById(id);
+                if (el) el.onclick = () => document.getElementById(links[id]).click();
             }
         }
-        
-        // Roda a função pela primeira vez (para a página inicial)
         addDashboardLinkListeners();
-
-    } // Fim do if (studentNameElement && studentRaElement)
+    }
 });
