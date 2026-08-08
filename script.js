@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
             raDisplay: "37939916874",
             curso: "Gestão da Tecnologia da Informação",
             foto: "images/profile-pic.jpg",
-            carteirinha: "images/carteirinha.png",
+            carteirinha: "images/carteirinha_gabriel.jpg",
             pdf: "images/carteirinha_gabriel.pdf"
         },
         {
