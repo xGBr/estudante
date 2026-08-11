@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             raLogin: "39993339873",
             senha: "123456789",
             nome: "Lais Bordin",
-            raDisplay: "37939916874",
+            raDisplay: "39993339873",
             curso: "Estatística",
             foto: "images/profile-pic-lais.jpg",
             carteirinha: "images/carteirinha_lais.jpg",
